@@ -14,7 +14,7 @@ import get_price_module
 # Constants & Immutables
 MINIMUM_USD: public(constant(uint256)) = as_wei_value(5, "ether")
 PRICE_FEED: public(immutable(AggregatorV3Interface)) # 0x694AA1769357215DE4FAC081bf1f309aDC325306 sepolia
-OWNER: public(immutable(address))
+OWNER: public(address)
 
 # Storage
 funders: public(DynArray[address, 1000])
@@ -24,7 +24,7 @@ funder_to_amount_funded: public(HashMap[address, uint256])
 @deploy
 def __init__(price_feed: address):
     PRICE_FEED = AggregatorV3Interface(price_feed)
-    OWNER = msg.sender
+    self.OWNER = msg.sender
 
 @external
 @payable
@@ -51,8 +51,8 @@ def withdraw():
 
     How do we make sure only we can pull the money out?
     """
-    assert msg.sender == OWNER, "Not the contract owner!"
-    raw_call(OWNER, b"", value = self.balance)
+    assert msg.sender == self.OWNER, "Not the contract owner!"
+    raw_call(self.OWNER, b"", value = self.balance)
     # send(OWNER, self.balance)
     # resetting
     for funder: address in self.funders:

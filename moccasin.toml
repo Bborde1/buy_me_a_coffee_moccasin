@@ -5,16 +5,20 @@ dot_env = ".env"
 
 [networks.contracts.price_feed]
 deployer_script = "script/deploy_mocks.py"
+abi = "mock_v3_aggregator"
+
+[networks.contracts.coffee]
+deployer_script = "script/deploy.py"
 
 [networks.pyevm]
 is_zksync = false
 
-
 [networks.anvil]
 url = "http://127.0.0.1:8545"
 prompt_live = false
-save_to_db = false
+save_to_db = true
 chain_id = 31337
+default_account_name = "anvil0"
 
 [networks.sepolia]
 url = "$SEPOLIA_RPC_URL"

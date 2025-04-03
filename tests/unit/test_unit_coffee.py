@@ -1,8 +1,8 @@
 from eth_utils import to_wei
 import boa
 import random
+from tests.conftest import SEND_VALUE
 
-SEND_VALUE = to_wei(1, "ether")
 RANDOM_USER = boa.env.generate_address("non-owner")
 TEN_FUNDERS_ADDRESSES = [boa.env.generate_address(f"funder_{i}") for i in range(10)]
 FUNDER_VALUES = [to_wei(random.randint(5, 10), "ether") for i in range(10)]
@@ -34,22 +34,16 @@ def test_fund_with_money(coffee, account):
     assert coffee.funder_to_amount_funded(funder) == SEND_VALUE
 
 
-def test_non_owner_cannot_withdraw(coffee, account):
-    # Arrange
-    boa.env.set_balance(account.address, SEND_VALUE)
-    coffee.fund(value=SEND_VALUE)
-
+def test_non_owner_cannot_withdraw(coffee_funded, account):
     with boa.env.prank(RANDOM_USER):
         with boa.reverts("Not the contract owner!"):
-            coffee.withdraw()
+            coffee_funded.withdraw()
 
 
-def test_owner_can_withdraw(coffee):
-    boa.env.set_balance(coffee.OWNER(), SEND_VALUE)
-    with boa.env.prank(coffee.OWNER()):
-        coffee.fund(value=SEND_VALUE)
-        coffee.withdraw()
-    assert boa.env.get_balance(coffee.address) == 0
+def test_owner_can_withdraw(coffee_funded):
+    with boa.env.prank(coffee_funded.OWNER()):
+        coffee_funded.withdraw()
+    assert boa.env.get_balance(coffee_funded.address) == 0
 
 
 def test_ten_funders(coffee):
@@ -64,3 +58,7 @@ def test_ten_funders(coffee):
 
     assert boa.env.get_balance(coffee.address) == 0
     assert boa.env.get_balance(coffee.OWNER()) == sum(TEN_FUNDERS.values())
+
+
+def test_get_rate(coffee):
+    assert coffee.get_eth_to_usd_rate(SEND_VALUE) > 0
