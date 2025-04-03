@@ -62,3 +62,13 @@ def test_ten_funders(coffee):
 
 def test_get_rate(coffee):
     assert coffee.get_eth_to_usd_rate(SEND_VALUE) > 0
+
+
+def test_default(coffee, account):
+    boa.env.set_balance(account.address, SEND_VALUE)
+    with boa.env.prank(account.address):
+        boa.env.raw_call(to_address=coffee.address, value=SEND_VALUE)
+
+    assert (
+        boa.env.get_balance(coffee.address) == SEND_VALUE
+    ), f"Values not equal {boa.env.get_balance(coffee.address)} does not equal {SEND_VALUE}"
