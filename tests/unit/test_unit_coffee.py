@@ -71,4 +71,4 @@ def test_default(coffee, account):
 
     assert (
         boa.env.get_balance(coffee.address) == SEND_VALUE
-    ), f"Values not equal {boa.env.get_balance(coffee.address)} does not equal {SEND_VALUE}"
+    ), f"Values not equal {boa.env.get_balance(coffee.address)} does not equal {SEND_VALUE}, with funder {coffee.funders(0)} and account {account.address}"
